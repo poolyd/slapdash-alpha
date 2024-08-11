@@ -1,14 +1,19 @@
-import React, { useState } from "react";
+import React from "react";
 
-export function SlapButton({title, identity, handlerCallback}: {title: string, identity: string, handlerCallback: (title: string) => void}) {
+interface SlapButtonProps {
+    type?: string;
+    title: string;
+    uuid: string;
+    handlerCallback: (uuid: string) => void;
+}
+
+export const SlapButton = ({title, uuid, handlerCallback, type}: SlapButtonProps) => {
     const handleButtonClick = (e: React.MouseEvent<HTMLElement>): void => {
         e.preventDefault();
-        handlerCallback(buttonIdentity);
+        handlerCallback(uuid);
     };
-    const [buttonIdentity] = useState(identity);
-    return (
-        <>
-            <button onClick={handleButtonClick}>{title}</button>
-        </>
+    if (type === 'link') return (
+        <a onClick={handleButtonClick}>{title}</a>
     );
+    return (<button onClick={handleButtonClick}>{title}</button> );
 }

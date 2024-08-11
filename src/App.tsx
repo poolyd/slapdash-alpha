@@ -1,35 +1,72 @@
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import {SlapButton} from "./lib-slapdash/ui/SlapButton.tsx";
+import SlapButtonBar from "./lib-slapdash/ui/SlapButtonBar";
 import {
-    SlapButton
-} from "./lib-slapdash/ui/SlapButton.tsx";
+    useEffect,
+    useMemo,
+    useState
+} from "react";
 
-function App() {
-    const handleButton = (identity: string): void  => {
-        let alertMessage: string = 'Some button was pressed, but not Slap Me!'
-      if (identity === 'slap-me') alertMessage = 'Slap Me!';
-      alert(alertMessage);
+// TODO: Data Source of Types
+interface ButtonActionTypes
+{
+    uuid: string;
+    title: string;
+    type?: string;
+    meta: unknown;
+}
+const slapButtonProps: ButtonActionTypes[] = [
+    {uuid: '00000000-0000-0000-0762-000000000001', title: 'Slap Me!', type: 'hubitat-api', meta: { action: 'toggle'} },
+    {uuid: '00000000-0000-0000-0762-000000000005', title: 'Boop.', type: 'mqtt-mesage', meta: { action: 'set-rgb'} },
+    {uuid: '00000000-0000-0000-0762-000000000009', title: 'Tickle', type: 'atari-cart', meta: { action: 'phone-home'} },
+];
+
+const App = () => {
+
+    const [message, setMessage] = useState('');
+
+    const hubitat: Worker = useMemo(() => new Worker(new URL('./hubitat-worker.ts', import.meta.url)),[]);
+
+    useEffect(() => {
+        hubitat.postMessage('start-hubitat-worker');
+    }, [hubitat]);
+
+    useEffect(() => {
+        hubitat.onmessage = (e: MessageEvent<string>) => {
+            setMessage(e.data);
+        }
+    }, [hubitat]);
+
+    const slapButtonHandler = (uuid: string): void  => {
+        let funnyMessage = 'Tickle Tickle!\nThis many times:';
+        switch(uuid) {
+            case '00000000-0000-0000-0762-000000000001':
+                funnyMessage = 'Slap Me!\nRando:';
+                break;
+            case '00000000-0000-0000-0762-000000000005':
+                funnyMessage = 'Archer says, "Boop".\nLucky Number:';
+                break;
+            default:
+        }
+        hubitat.postMessage(funnyMessage);
     };
 
-  return (
-    <>
-      <div>
-          <SlapButton title={'Slap Me!'} identity={'slap-me'} handlerCallback={handleButton}/>
-          <SlapButton title={'Boring Button'} identity={'boring-button'} handlerCallback={handleButton}/>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    return (
+        <>
+            <div>
+                <div>
+                    <pre>{message}</pre>
+                </div>
+                <SlapButtonBar>
+                    {slapButtonProps.map(act => (
+                        <SlapButton
+                            title={act.title}
+                            uuid={act.uuid}
+                            handlerCallback={slapButtonHandler}/>))}
+                </SlapButtonBar>
+            </div>
+        </>
+    )
 }
 
 export default App
