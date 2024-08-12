@@ -1,11 +1,13 @@
 import './App.css'
 import {SlapButton} from "./lib-slapdash/ui/SlapButton.tsx";
 import SlapButtonBar from "./lib-slapdash/ui/SlapButtonBar";
-import {
+import  {
     useEffect,
-    useMemo,
     useState
 } from "react";
+import {
+    useAppStyles
+} from "./AppJss.ts";
 
 // TODO: Data Source of Types
 interface ButtonActionTypes
@@ -13,57 +15,68 @@ interface ButtonActionTypes
     uuid: string;
     title: string;
     type?: string;
-    meta: unknown;
+    meta: ButtonMeta
 }
+
+interface ButtonMeta
+{
+    device: string
+    action?: string,
+
+}
+
 const slapButtonProps: ButtonActionTypes[] = [
-    {uuid: '00000000-0000-0000-0762-000000000001', title: 'Slap Me!', type: 'hubitat-api', meta: { action: 'toggle'} },
-    {uuid: '00000000-0000-0000-0762-000000000005', title: 'Boop.', type: 'mqtt-mesage', meta: { action: 'set-rgb'} },
-    {uuid: '00000000-0000-0000-0762-000000000009', title: 'Tickle', type: 'atari-cart', meta: { action: 'phone-home'} },
+    {uuid: '00000000-0000-0000-0762-000000000001', title: 'Power', type: 'hubitat-api', meta: { action: 'toggle-power', device: 'lamp'} },
+    {uuid: '00000000-0000-0000-0762-000000000005', title: 'Daylight', type: 'hubitat-api', meta: { action: 'set-daylight', device: 'lamp'} },
+    {uuid: '00000000-0000-0000-0762-000000000009', title: 'Evening', type: 'hubitat-api', meta: { action: 'set-evening', device: 'lamp'} },
 ];
 
 const App = () => {
 
-    const [message, setMessage] = useState('');
+    const [mqtt, setMqtt] = useState<Worker>();
+    const [messages, setMessages] = useState<string[]>([]);
 
-    const hubitat: Worker = useMemo(() => new Worker(new URL('./hubitat-worker.ts', import.meta.url)),[]);
-
-    useEffect(() => {
-        hubitat.postMessage('start-hubitat-worker');
-    }, [hubitat]);
+    const classes = useAppStyles();
 
     useEffect(() => {
-        hubitat.onmessage = (e: MessageEvent<string>) => {
-            setMessage(e.data);
+        const mqttWorker: Worker = new Worker(new URL('./lib-slapdash/worker-context/mqtt-worker.ts', import.meta.url), { type: 'module' });
+        setMqtt(mqttWorker);
+    }, []);
+
+    useEffect(() => {
+        if (mqtt) {
+            mqtt!.onmessage = (event: MessageEvent) => {
+                console.log(event);
+                setMessages([...messages, event.data]);
+            };
         }
-    }, [hubitat]);
+    }, [mqtt, messages]);
 
     const slapButtonHandler = (uuid: string): void  => {
-        let funnyMessage = 'Tickle Tickle!\nThis many times:';
-        switch(uuid) {
-            case '00000000-0000-0000-0762-000000000001':
-                funnyMessage = 'Slap Me!\nRando:';
-                break;
-            case '00000000-0000-0000-0762-000000000005':
-                funnyMessage = 'Archer says, "Boop".\nLucky Number:';
-                break;
-            default:
+        const uuidIndex = slapButtonProps.findIndex(btn => btn.uuid === uuid);
+        if (uuidIndex >= 0 && uuidIndex <= slapButtonProps.length - 1) {
+            const device = slapButtonProps[uuidIndex];
+            mqtt?.postMessage(device.meta.action);
         }
-        hubitat.postMessage(funnyMessage);
     };
 
     return (
         <>
             <div>
-                <div>
-                    <pre>{message}</pre>
+                <div>Messages: {messages.length}</div>
+                <div className={classes.scroller}>
+                    { messages.map(m => (<div className={classes.listRow}><pre>{m}</pre></div>)) }
+                </div>
+                <div className={classes.lampCard}>
+                    <div>Lamp</div>
                 </div>
                 <SlapButtonBar>
-                    {slapButtonProps.map(act => (
-                        <SlapButton
-                            title={act.title}
-                            uuid={act.uuid}
-                            handlerCallback={slapButtonHandler}/>))}
-                </SlapButtonBar>
+                        {slapButtonProps.map(act => (
+                            <SlapButton
+                                title={act.title}
+                                uuid={act.uuid}
+                                handlerCallback={slapButtonHandler}/>))}
+                    </SlapButtonBar>
             </div>
         </>
     )

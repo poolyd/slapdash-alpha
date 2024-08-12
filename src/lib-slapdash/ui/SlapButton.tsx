@@ -13,7 +13,7 @@ export const SlapButton = ({title, uuid, handlerCallback, type}: SlapButtonProps
         handlerCallback(uuid);
     };
     if (type === 'link') return (
-        <a onClick={handleButtonClick}>{title}</a>
+        <a key={uuid} onClick={handleButtonClick}>{title}</a>
     );
-    return (<button onClick={handleButtonClick}>{title}</button> );
+    return (<button key={uuid} onClick={handleButtonClick}>{title}</button> );
 }
