@@ -1,7 +1,7 @@
 import mqtt from 'mqtt';
 const clientId = `slapdash-alpha-${ Math.floor(Math.random() * (999999 - 100000) + 100000)}`;
 const clientQueue = `poolyd/${clientId}`;
-const client = mqtt.connect('wss://your-mqtt-host:websocket-port-number', {clientId});
+const client = mqtt.connect('wss://poolyd.stuntware.net:8883', {clientId});
 
 self.postMessage('Connecting to the MQTT Broker...');
 
@@ -25,8 +25,8 @@ client.on('message', (topic, message) => {
         self.postMessage(`Slapdash: ${message}`);
     }
     else {
-        if (!topic.match(/\$SYS/i)) {
-            self.postMessage(`${topic}: {message}`);
+        if (topic.match(/\$SYS/i)) {
+            self.postMessage(`${topic}: ${message}`);
         }
     }
 });

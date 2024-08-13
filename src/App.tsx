@@ -39,7 +39,7 @@ const App = () => {
     const classes = useAppStyles();
 
     useEffect(() => {
-        const mqttWorker: Worker = new Worker(new URL('./lib-slapdash/worker-context/mqtt-worker.ts', import.meta.url), { type: 'module' });
+        const mqttWorker: Worker = new Worker(new URL('mqtt-worker.ts', import.meta.url), { type: 'module' });
         setMqtt(mqttWorker);
     }, []);
 
