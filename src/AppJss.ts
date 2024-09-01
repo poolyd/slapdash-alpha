@@ -5,29 +5,53 @@ import {
 
 export const useAppStyles = createUseStyles({
     scroller: {
-        backgroundColor: 'rgba(85, 95, 75, 0.2)',
-        minHeight: '20ex',
-        maxHeight: '20ex',
-        height: '20ex',
-        borderRadius: '5px',
-        border: '1px solid black',
+        // Glassmorphism
+        backgroundColor: 'rgba( 255, 255, 255, 0.25 )',
+        boxShadow: '0 8px 32px 0 rgba( 31, 38, 135, 0.37 )',
+        backdropFilter: 'blur( 4px )',
+        borderRadius: '7px',
+        border: '1px solid rgba( 255, 255, 255, 0.18 )',
+        //
+
+
+        minHeight: '69vh',
+        maxHeight: '69vh',
+        height: '69vh',
+        minWidth: '69vw',
+        maxWidth: '69vw',
+        width: '69vw',
         overflowY: 'scroll',
         scrollbarWidth: 'thin',
         scrollbarGutter: 'stable both-edges',
+        scrollbarColor: 'rgba( 255, 255, 255, 0.5 ) rgba( 255, 255, 255, 0.1 )',
+
         padding: '1ex',
         marginBottom: '1ex'
     },
     listRow: {
-        borderRadius: '5px',
-        padding: '1px',
-        marginBottom: '3px',
-        backgroundColor: 'rgba(55, 55, 95, 0.3)',
+        fontFamily: 'OCR A, monospace',
+        color: 'rgba( 255, 255, 255, 0.8 )',
+        textShadow: '0px 0px 5px rgba( 75, 75, 75, 0.7 )',
+        // Glassmorphism
+        backgroundColor: 'rgba( 255, 255, 255, 0.01)',
+        boxShadow: '0 8px 32px 0 rgba( 31, 38, 135, 0.37 )',
+        backdropFilter: 'blur( 4px )',
+        borderRadius: '7px',
+        border: '1px solid rgba( 255, 255, 255, 0.18 )',
+        //
+        padding: '1ex',
+        marginBottom: '7px',
 
     },
     lampCard: {
-        backgroundColor: 'rgba(155, 155, 195, 0.3)',
+        fontSize: 'large',
+        // Glassmorphism
+        backgroundColor: 'rgba( 255, 255, 255, 0.15 )',
+        boxShadow: '0 8px 32px 0 rgba( 31, 38, 135, 0.37 )',
+        backdropFilter: 'blur( 4px )',
+        border: '1px solid rgba( 255, 255, 255, 0.18 )',
+        //
         borderRadius: '7pt 7pt 0pt 0pt',
-        border: '1pt solid black',
         borderBottom: '0pt',
     }
 })
