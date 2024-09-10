@@ -32,6 +32,8 @@ export const useAppStyles = createUseStyles({
         fontFamily: 'OCR A, monospace',
         color: 'rgba( 255, 255, 255, 0.8 )',
         textShadow: '0px 0px 5px rgba( 75, 75, 75, 0.7 )',
+        wordWrap: 'break-word',
+        fontSize: 'medium',
         // Glassmorphism
         backgroundColor: 'rgba( 255, 255, 255, 0.01)',
         boxShadow: '0 8px 32px 0 rgba( 31, 38, 135, 0.37 )',
@@ -44,7 +46,6 @@ export const useAppStyles = createUseStyles({
 
     },
     lampCard: {
-        fontSize: 'large',
         // Glassmorphism
         backgroundColor: 'rgba( 255, 255, 255, 0.15 )',
         boxShadow: '0 8px 32px 0 rgba( 31, 38, 135, 0.37 )',
